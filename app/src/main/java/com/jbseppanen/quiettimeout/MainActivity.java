@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RECORD_REQUEST_CODE = 1;
 
     private Toolbar toolbar;
-    private Context context;
+    static Context context;
     private DrawerLayout drawerLayout;
     private GridLayoutManager layoutManager;
     private RecyclerView listView;

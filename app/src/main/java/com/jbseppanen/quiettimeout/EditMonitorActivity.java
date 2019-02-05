@@ -1,5 +1,6 @@
 package com.jbseppanen.quiettimeout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,7 +12,7 @@ public class EditMonitorActivity extends AppCompatActivity {
 
     public static final String EDIT_MONITOR_KEY = "Monitor to edit";
 
-    private TextView mTextMessage;
+    Monitor monitor;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -20,13 +21,13 @@ public class EditMonitorActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.edit_navigation_run:
-                    mTextMessage.setText(R.string.title_home);
+
                     return true;
                 case R.id.edit_navigation_save:
-                    mTextMessage.setText(R.string.title_dashboard);
+//                    MainActivity.viewModel.addMonitor(monitor);
                     return true;
                 case R.id.edit_navigation_delete:
-                    mTextMessage.setText(R.string.title_notifications);
+
                     return true;
             }
             return false;
@@ -38,9 +39,10 @@ public class EditMonitorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_monitor);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        ((BottomNavigationView) findViewById(R.id.navigation)).setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        Intent intent = getIntent();
+        final Monitor monitor = (Monitor) intent.getSerializableExtra(EDIT_MONITOR_KEY);
     }
 
 }
