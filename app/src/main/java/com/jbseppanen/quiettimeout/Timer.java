@@ -1,18 +1,24 @@
 package com.jbseppanen.quiettimeout;
 
+import android.os.CountDownTimer;
+
 public class Timer {
 
-    private int duration, timeLeft, startTime;
+    public static final int COUNT_DOWN_INTERVAL = 1000;
+    private int timeLeft, startTime;
+    private long duration;
+    private CountDownTimer countDownTimer;
 
-    public Timer(int duration) {
+    public Timer(long duration, CountDownTimer countDownTimer) {
         this.duration = duration;
+        this.countDownTimer = countDownTimer;
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 
@@ -30,5 +36,13 @@ public class Timer {
 
     public void setStartTime() {
         this.startTime = (int) (System.currentTimeMillis() / 1000);
+    }
+
+    public CountDownTimer getCountDownTimer() {
+        return countDownTimer;
+    }
+
+    public void setCountDownTimer(CountDownTimer countDownTimer) {
+        this.countDownTimer = countDownTimer;
     }
 }

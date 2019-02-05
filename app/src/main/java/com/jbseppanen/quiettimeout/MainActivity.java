@@ -4,6 +4,7 @@ import android.app.UiModeManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -81,6 +82,26 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        CountDownTimer countDownTimer = new CountDownTimer(30000, 1000) {
+            @Override
+            public void onTick(final long millisUntilFinished) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textView.setText(String.valueOf(millisUntilFinished / 1000));
+                    }
+                });
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+        Timer timer = new Timer(30000, countDownTimer);
+        Config config = new Config(null, timer);
+        config.getTimer().getCountDownTimer().start();
     }
 
     @Override
