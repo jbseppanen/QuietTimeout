@@ -6,6 +6,7 @@ import android.app.UiModeManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -160,9 +161,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
 
                 break;
-            case R.id.options_add_config:
-                Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
-
+            case R.id.options_add_monitor:
+//                Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, EditMonitorActivity.class);
+                intent.putExtra(EditMonitorActivity.EDIT_MONITOR_KEY, new Monitor());
+                startActivity(intent);
                 break;
         }
         return true;

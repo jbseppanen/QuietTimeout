@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/edit_navigation_run"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="Run" />
+
+    <item
+        android:id="@+id/edit_navigation_save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Save" />
+
+    <item
+        android:id="@+id/edit_navigation_delete"
+        android:icon="@android:drawable/ic_delete"
+        android:title="Delete" />
+
+</menu>

@@ -2,4 +2,8 @@
     <string name="app_name">Quiet Timeout</string>
     <string name="navigation_drawer_open">Open Drawer</string>
     <string name="navigation_drawer_close">Close Drawer</string>
+    <string name="title_activity_edit_monitor">EditMonitorActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class RunMonitorActivity extends AppCompatActivity {
 
-    public static final String MONITOR_KEY = "Monitor to Run";
+    public static final String RUN_MONITOR_KEY = "Monitor to Run";
 
     private MediaRecorder recorder;
     private Thread soundThread;
@@ -34,7 +34,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         timerDisplay = findViewById(R.id.text_run_timer_display);
 
         Intent intent = getIntent();
-        final Monitor monitor = (Monitor) intent.getSerializableExtra(MONITOR_KEY);
+        final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
 
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
             @Override
