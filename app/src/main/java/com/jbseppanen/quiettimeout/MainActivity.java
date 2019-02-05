@@ -99,9 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-        Timer timer = new Timer(30000, countDownTimer);
-        Config config = new Config(null, timer);
-        config.getTimer().getCountDownTimer().start();
+        Monitor monitor = new Monitor(10, countDownTimer);
+        monitor.getCountDownTimer().start();
     }
 
     @Override
