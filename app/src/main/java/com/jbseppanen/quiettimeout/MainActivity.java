@@ -3,19 +3,23 @@ package com.jbseppanen.quiettimeout;
 import android.Manifest;
 import android.app.Activity;
 import android.app.UiModeManager;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -23,22 +27,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.facebook.stetho.Stetho;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
     private static final int RECORD_REQUEST_CODE = 1;
 
-    Toolbar toolbar;
-    Context context;
-    DrawerLayout drawerLayout;
-    TextView textView;
+    private Toolbar toolbar;
+    private Context context;
+    private DrawerLayout drawerLayout;
+    private GridLayoutManager layoutManager;
+    private RecyclerView listView;
+    private MonitorListAdapter listAdapter;
+    private MonitorViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Stetho.initializeWithDefaults(this);
 
         context = this;
 
@@ -50,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        textView = findViewById(R.id.text_view_main);
-        textView.setText("Main Activity");
 
         drawerLayout = findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -85,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_night_mode:
                         return false;
                     case R.id.nav_settings:
-                        textView.setText("Settings Activity");
                         break;
 
                 }
@@ -98,13 +105,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        listView = findViewById(R.id.monitor_recycler_view);
+
+        layoutManager = new GridLayoutManager(context, 2);
+        listView.setLayoutManager(layoutManager);
+
+        viewModel = ViewModelProviders.of(this).get(MonitorViewModel.class);
 
 
-        Monitor monitor = new Monitor(5000, 500000);
+        final Observer<ArrayList<Monitor>> observer = new Observer<ArrayList<Monitor>>() {
+            @Override
+            public void onChanged(@Nullable ArrayList<Monitor> monitors) {
+                if (monitors != null) {
+                    if (listAdapter == null) {
+                        listAdapter = new MonitorListAdapter(monitors, (Activity) context);
+                        listView.setAdapter(listAdapter);
+                    } else {
+                        listAdapter.replaceList(monitors);
+                        listAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        };
+        viewModel.getNotesList(context).observe(this, observer);
 
-        Intent intent = new Intent(context, RunMonitorActivity.class);
-        intent.putExtra(RunMonitorActivity.MONITOR_KEY, monitor);
-        startActivity(intent);
+
+        Monitor monitor = new Monitor();
+        monitor.setDuration(5000);
+        monitor.setThreshold(5000);
+        viewModel.addMonitor(monitor, context);
     }
 
     @Override
@@ -130,13 +159,18 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.options_view_log:
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
-                textView.setText("View Log Activity");
+
                 break;
             case R.id.options_add_config:
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
-                textView.setText("NoiseMonitorConfig activity");
+
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

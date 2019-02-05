@@ -91,7 +91,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            timerDisplay.setText("RESET!");
+                                            timerDisplay.setText("Too Loud!");
                                         }
                                     });
                                     Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

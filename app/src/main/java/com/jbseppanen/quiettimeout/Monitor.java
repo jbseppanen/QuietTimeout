@@ -4,10 +4,13 @@ import java.io.Serializable;
 
 public class Monitor implements Serializable {
 
-    public static final int DEFAULT_THRESHOLD = 1000;
-    private int threshold, duration;
+    public static final int NO_ID = -1;
 
-    public Monitor(int threshold, int duration) {
+    public static final int DEFAULT_THRESHOLD = 1000;
+    private int threshold, duration, id;
+
+    public Monitor(int id, int threshold, int duration) {
+        this.id = id;
         this.threshold = threshold;
         this.duration = duration;
     }
@@ -15,6 +18,15 @@ public class Monitor implements Serializable {
     public Monitor() {
         this.threshold = DEFAULT_THRESHOLD;
         this.duration = 0;
+        this.id = NO_ID;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getThreshold() {
