@@ -23,11 +23,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RECORD_REQUEST_CODE = 1;
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Monitor monitor = new Monitor(10, 30000);
+        Monitor monitor = new Monitor(5000, 5000);
 
         Intent intent = new Intent(context, RunMonitorActivity.class);
         intent.putExtra(RunMonitorActivity.MONITOR_KEY, monitor);
