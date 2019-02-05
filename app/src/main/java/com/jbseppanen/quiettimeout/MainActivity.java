@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Monitor monitor = new Monitor(5000, 5000);
+        Monitor monitor = new Monitor(5000, 500000);
 
         Intent intent = new Intent(context, RunMonitorActivity.class);
         intent.putExtra(RunMonitorActivity.MONITOR_KEY, monitor);
