@@ -2,20 +2,21 @@ package com.jbseppanen.quiettimeout;
 
 import android.os.CountDownTimer;
 
-public class Monitor {
+import java.io.Serializable;
+
+public class Monitor implements Serializable {
 
     public static final int DEFAULT_THRESHOLD = 1000;
-    private int threshold;
-    private CountDownTimer countDownTimer;
+    private int threshold, duration;
 
-    public Monitor(int threshold, CountDownTimer countDownTimer) {
+    public Monitor(int threshold, int duration) {
         this.threshold = threshold;
-        this.countDownTimer = countDownTimer;
+        this.duration = duration;
     }
 
     public Monitor() {
         this.threshold = DEFAULT_THRESHOLD;
-        this.countDownTimer = null;
+        this.duration = 0;
     }
 
     public int getThreshold() {
@@ -26,11 +27,11 @@ public class Monitor {
         this.threshold = threshold;
     }
 
-    public CountDownTimer getCountDownTimer() {
-        return countDownTimer;
+    public int getDuration() {
+        return duration;
     }
 
-    public void setCountDownTimer(CountDownTimer countDownTimer) {
-        this.countDownTimer = countDownTimer;
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 }

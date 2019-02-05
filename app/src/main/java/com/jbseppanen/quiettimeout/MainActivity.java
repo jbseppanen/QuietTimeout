@@ -2,6 +2,7 @@ package com.jbseppanen.quiettimeout;
 
 import android.app.UiModeManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -17,8 +18,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -83,24 +87,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CountDownTimer countDownTimer = new CountDownTimer(30000, 1000) {
-            @Override
-            public void onTick(final long millisUntilFinished) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textView.setText(String.valueOf(millisUntilFinished / 1000));
-                    }
-                });
-            }
 
-            @Override
-            public void onFinish() {
 
-            }
-        };
-        Monitor monitor = new Monitor(10, countDownTimer);
-        monitor.getCountDownTimer().start();
+        Monitor monitor = new Monitor(10, 30000);
+
+        Intent intent = new Intent(context, RunMonitorActivity.class);
+        intent.putExtra(RunMonitorActivity.MONITOR_KEY, monitor);
+        startActivity(intent);
+
+
     }
 
     @Override
