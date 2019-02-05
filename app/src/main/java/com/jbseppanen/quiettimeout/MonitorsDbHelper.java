@@ -1,11 +1,10 @@
 package com.jbseppanen.quiettimeout;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class MonitorsDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "MonitorsDatabase.db";
 
     public MonitorsDbHelper() {

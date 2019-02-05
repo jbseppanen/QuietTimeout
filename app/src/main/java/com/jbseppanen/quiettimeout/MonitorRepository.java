@@ -25,6 +25,11 @@ public class MonitorRepository {
         liveDataList.postValue(getNotesFromCache());
     }
 
+    public void updateMonitor(Monitor monitor) {
+        MonitorsDbDao.updateMonitor(monitor);
+        liveDataList.postValue(getNotesFromCache());
+    }
+
     public void deleteMonitor(Monitor monitor) {
         MonitorsDbDao.deleteMonitor(monitor);
         liveDataList.postValue(getNotesFromCache());

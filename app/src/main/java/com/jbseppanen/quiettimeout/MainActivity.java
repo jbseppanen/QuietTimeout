@@ -127,13 +127,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        viewModel.getNotesList(context).observe(this, observer);
+        viewModel.getNotesList().observe(this, observer);
 
 
         Monitor monitor = new Monitor();
         monitor.setDuration(5000);
         monitor.setThreshold(5000);
-        viewModel.addMonitor(monitor, context);
+        viewModel.addMonitor(monitor);
     }
 
     @Override

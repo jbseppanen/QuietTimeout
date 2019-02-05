@@ -12,7 +12,7 @@ public class MonitorViewModel extends ViewModel {
     private MutableLiveData<ArrayList<Monitor>> monitorList;
     private MonitorRepository repo;
 
-    public LiveData<ArrayList<Monitor>> getNotesList(Context context) {
+    public LiveData<ArrayList<Monitor>> getNotesList() {
         if(monitorList == null) {
             loadList();
         }
@@ -24,9 +24,15 @@ public class MonitorViewModel extends ViewModel {
         monitorList = repo.getMonitors();
     }
 
-    public void addMonitor(Monitor monitor, Context context) {
+    public void addMonitor(Monitor monitor) {
         if(monitorList != null) {
             repo.addMonitor(monitor);
+        }
+    }
+
+    public void updateMonitor(Monitor monitor) {
+        if(monitorList != null) {
+            repo.updateMonitor(monitor);
         }
     }
 
