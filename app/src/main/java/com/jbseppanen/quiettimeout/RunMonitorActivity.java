@@ -36,6 +36,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
 
+        //TODO change countdown timer below to be a chronometer view.
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
             @Override
             public void onTick(final long millisUntilFinished) {

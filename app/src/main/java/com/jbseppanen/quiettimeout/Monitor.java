@@ -17,7 +17,7 @@ public class Monitor implements Serializable {
 
     public Monitor() {
         this.threshold = DEFAULT_THRESHOLD;
-        this.duration = 0;
+        this.duration = 6000;
         this.id = NO_ID;
     }
 
