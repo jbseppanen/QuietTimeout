@@ -33,8 +33,8 @@ public class MonitorListAdapter extends RecyclerView.Adapter<MonitorListAdapter.
     }
 
     private ArrayList<Monitor> dataList;
-    private Context         context;
-    private Activity        activity;
+    private Context context;
+    private Activity activity;
 
     MonitorListAdapter(ArrayList<Monitor> dataList, Activity activity) {
         this.dataList = dataList;
@@ -52,10 +52,10 @@ public class MonitorListAdapter extends RecyclerView.Adapter<MonitorListAdapter.
         context = viewGroup.getContext();
         View view = LayoutInflater.from(
                 viewGroup.getContext())
-                                  .inflate(
-                                          R.layout.monitor_element_layout,
-                                          viewGroup,
-                                          false);
+                .inflate(
+                        R.layout.monitor_element_layout,
+                        viewGroup,
+                        false);
         return new ViewHolder(view);
     }
 
@@ -70,6 +70,7 @@ public class MonitorListAdapter extends RecyclerView.Adapter<MonitorListAdapter.
             public void onClick(View view) {
                 Intent intent = new Intent(context, RunMonitorActivity.class);
                 intent.putExtra(RunMonitorActivity.MONITOR_KEY, data);
+                activity.startActivity(intent);
             }
         });
     }
