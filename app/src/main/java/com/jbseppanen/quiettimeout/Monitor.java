@@ -1,7 +1,5 @@
 package com.jbseppanen.quiettimeout;
 
-import android.os.CountDownTimer;
-
 import java.io.Serializable;
 
 public class Monitor implements Serializable {

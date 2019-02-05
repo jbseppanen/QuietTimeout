@@ -1,13 +1,18 @@
 package com.jbseppanen.quiettimeout;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +30,8 @@ import android.widget.Toast;
 import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int RECORD_REQUEST_CODE = 1;
+
     Toolbar toolbar;
     Context context;
     DrawerLayout drawerLayout;
@@ -36,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         context = this;
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_REQUEST_CODE);
+        } else {
+            Toast.makeText(context, "Recording permission was granted", Toast.LENGTH_SHORT).show();
+        }
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,13 +102,22 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Monitor monitor = new Monitor(10, 30000);
+/*        Monitor monitor = new Monitor(10, 30000);
 
         Intent intent = new Intent(context, RunMonitorActivity.class);
         intent.putExtra(RunMonitorActivity.MONITOR_KEY, monitor);
-        startActivity(intent);
+        startActivity(intent);*/
+    }
 
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RECORD_REQUEST_CODE) {
+            if (!(permissions[0].equals(Manifest.permission.RECORD_AUDIO) && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                Toast.makeText(context, "Need to grant permission to use recording.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
     }
 
     @Override
