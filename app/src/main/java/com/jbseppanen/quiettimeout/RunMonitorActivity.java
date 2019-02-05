@@ -30,7 +30,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run_monitor);
 
-        mProgressBar = findViewById(R.id.progress_level);
+        mProgressBar = findViewById(R.id.progress_run_sound_level);
         timerDisplay = findViewById(R.id.text_run_timer_display);
 
         Intent intent = getIntent();
