@@ -102,11 +102,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-/*        Monitor monitor = new Monitor(10, 30000);
+        Monitor monitor = new Monitor(10, 30000);
 
         Intent intent = new Intent(context, RunMonitorActivity.class);
         intent.putExtra(RunMonitorActivity.MONITOR_KEY, monitor);
-        startActivity(intent);*/
+        startActivity(intent);
     }
 
     @Override
