@@ -73,6 +73,14 @@ public class MonitorListAdapter extends RecyclerView.Adapter<MonitorListAdapter.
                 activity.startActivity(intent);
             }
         });
+
+        viewHolder.parentView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+               MainActivity.viewModel.deleteMonitor(data);
+                return true;
+            }
+        });
     }
 
     @Override

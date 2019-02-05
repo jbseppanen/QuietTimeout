@@ -30,4 +30,10 @@ public class MonitorViewModel extends ViewModel {
         }
     }
 
+    public void deleteMonitor(Monitor monitor) {
+        if(monitorList != null) {
+            repo.deleteMonitor(monitor);
+        }
+    }
+
 }

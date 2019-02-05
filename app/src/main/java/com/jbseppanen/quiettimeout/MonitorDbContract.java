@@ -10,7 +10,7 @@ public class MonitorDbContract {
 
         public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME +
                 " ( " +
-                _ID + " TEXT PRIMARY KEY, " +
+                _ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_NAME_THRESHOLD + " INTEGER, " +
                 COLUMN_NAME_DURATION + " INTEGER);";
 

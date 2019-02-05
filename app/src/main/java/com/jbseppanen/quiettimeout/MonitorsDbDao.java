@@ -107,7 +107,7 @@ public class MonitorsDbDao {
         if (db != null) {
             String whereClause = String.format("%s = '%s'",
                     MonitorDbContract.MonitorsEntry._ID,
-                    monitor.getId());
+                    String.valueOf(monitor.getId()));
 
             int affectedRows = db.delete(MonitorDbContract.MonitorsEntry.TABLE_NAME, whereClause, null);
         }

@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private GridLayoutManager layoutManager;
     private RecyclerView listView;
     private MonitorListAdapter listAdapter;
-    private MonitorViewModel viewModel;
+    static MonitorViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,8 +168,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 }
