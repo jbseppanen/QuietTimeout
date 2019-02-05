@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class MonitorRepository {
     MutableLiveData<ArrayList<Monitor>> liveDataList;
 
-    public MutableLiveData<ArrayList<Monitor>> getMonitors(final Context context) {
+    public MutableLiveData<ArrayList<Monitor>> getMonitors() {
         liveDataList = new MutableLiveData<>();
-        MonitorsDbDao.initializeInstance(context);
+        MonitorsDbDao.initializeInstance();
         liveDataList.postValue(getNotesFromCache());
         return liveDataList;
     }

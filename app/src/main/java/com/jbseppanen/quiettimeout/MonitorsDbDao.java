@@ -11,9 +11,9 @@ import java.util.ArrayList;
 public class MonitorsDbDao {
     private static SQLiteDatabase db;
 
-    public static void initializeInstance(Context context) {
+    public static void initializeInstance() {
         if (db == null) {
-            MonitorsDbHelper helper = new MonitorsDbHelper(context);
+            MonitorsDbHelper helper = new MonitorsDbHelper();
             db = helper.getWritableDatabase();
         }
     }

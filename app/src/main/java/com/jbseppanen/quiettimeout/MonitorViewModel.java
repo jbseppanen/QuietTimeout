@@ -14,14 +14,14 @@ public class MonitorViewModel extends ViewModel {
 
     public LiveData<ArrayList<Monitor>> getNotesList(Context context) {
         if(monitorList == null) {
-            loadList(context);
+            loadList();
         }
         return monitorList;
     }
 
-    private void loadList(Context context) {
+    private void loadList() {
         repo = new MonitorRepository();
-        monitorList = repo.getMonitors(context);
+        monitorList = repo.getMonitors();
     }
 
     public void addMonitor(Monitor monitor, Context context) {
