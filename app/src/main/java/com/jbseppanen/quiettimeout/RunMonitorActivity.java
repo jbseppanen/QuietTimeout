@@ -34,11 +34,14 @@ public class RunMonitorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_run_monitor);
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
+
         timerDisplay = findViewById(R.id.text_run_timer_display);
         timerView = findViewById(R.id.timer_view);
 
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
+
+        mProgressBar.setSecondaryProgress(monitor.getThreshold());
 
         //TODO change countdown timer below to be a chronometer view.
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
