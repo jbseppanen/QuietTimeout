@@ -1,8 +1,6 @@
 package com.jbseppanen.quiettimeout;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
-import android.util.MonthDisplayHelper;
 
 import java.util.ArrayList;
 
