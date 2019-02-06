@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jbseppanen.quiettimeout.views.TimerView;
+
 import java.io.IOException;
 
 
@@ -23,6 +25,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private CountDownTimer countDownTimer;
     TextView timerDisplay;
+    TimerView timerView;
 
 
     @Override
@@ -32,6 +35,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
         timerDisplay = findViewById(R.id.text_run_timer_display);
+        timerView = findViewById(R.id.timer_view);
 
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
@@ -47,6 +51,8 @@ public class RunMonitorActivity extends AppCompatActivity {
                     displayValue = String.valueOf(millisUntilFinished / 1000);
                 }
                 timerDisplay.setText(displayValue);
+                float level = millisUntilFinished/ (float) monitor.getDuration();
+                timerView.updateLevel(level);
             }
 
             @Override

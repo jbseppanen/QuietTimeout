@@ -1,6 +1,7 @@
 package com.jbseppanen.quiettimeout.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -14,7 +15,7 @@ public class TimerView extends View {
 
     private int height, width;
     private Paint paint;
-    Rect rectangle;
+    int level;
 
     public TimerView(Context context) {
         super(context);
@@ -38,20 +39,25 @@ public class TimerView extends View {
 
     protected void init(AttributeSet attrs) {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        height = heightMeasureSpec;
-        width = widthMeasureSpec;
-        rectangle = new Rect(0, 0, width, height);
+        if (attrs != null) {
+            TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.TimerView);
+            level = typedArray.getResourceId(R.styleable.TimerView_level, 0);
+            typedArray.recycle();
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        height = getHeight();
+        width = getWidth();
         paint.setColor(getResources().getColor(R.color.colorPrimary));
-        canvas.drawRect(rectangle, paint);
+        canvas.drawRect(0, level, width, height, paint);
     }
+
+    public void updateLevel(float inputLevel) {
+        level = (int) (inputLevel * height);
+        invalidate();
+    }
+
 }
