@@ -26,7 +26,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     TextView timerDisplay;
     TimerView timerView;
-
+   private ConnectionHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,9 @@ public class RunMonitorActivity extends AppCompatActivity {
         initializeRecorder();
         recorder.start();
 
+        helper = new ConnectionHelper();
+        helper.registerService();
+
         soundThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -95,6 +98,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                             int maxAmplitude = recorder.getMaxAmplitude();
                             if (maxAmplitude > 0) {
                                 mProgressBar.setProgress(maxAmplitude);
+                                helper.sendMessage(String.valueOf(maxAmplitude));
                                 if (maxAmplitude > monitor.getThreshold()) {
                                     countDownTimer.cancel();
                                     recorder.stop();
@@ -152,6 +156,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        helper.shutdownServices();
         soundThread.interrupt();
         soundThread = null;
         countDownTimer.cancel();

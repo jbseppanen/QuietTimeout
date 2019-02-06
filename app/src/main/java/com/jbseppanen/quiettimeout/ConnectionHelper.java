@@ -16,6 +16,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 class ConnectionHelper {
+    private static final String DEFAULT_SERVICE_NAME = "QuietTimeoutRemoteService";
+
     private static final String SERVICE_TYPE = "_http._tcp.";
     private ServerSocket mServerSocket;
     private int mLocalPort;
@@ -49,7 +51,7 @@ class ConnectionHelper {
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
 
         if (mServiceName == null) {
-            mServiceName = MainActivity.context.getString(R.string.app_name);
+            mServiceName = DEFAULT_SERVICE_NAME;
         }
         serviceInfo.setServiceName(mServiceName);
 
@@ -126,7 +128,7 @@ class ConnectionHelper {
                 } else if (serviceInfo.getServiceName().equals(mServiceName)) {
 //                } else {
                     Log.i(TAG, "Same machine: " + mServiceName);
-                } else if (serviceInfo.getServiceName().contains(MainActivity.context.getResources().getString(R.string.app_name))) {
+                } else if (serviceInfo.getServiceName().contains(DEFAULT_SERVICE_NAME)) {
 //                } else {
                     if (mDiscoveredServices.size() == 0) {
                         mNsdManager.resolveService(serviceInfo, mResolveListener);
@@ -162,6 +164,9 @@ class ConnectionHelper {
                     return;
                 }
                 mService = serviceInfo;
+                if (receivingThread != null) {
+                    receivingThread.start();
+                }
             }
         };
     }
@@ -174,8 +179,12 @@ class ConnectionHelper {
         }
 
         if (mNsdManager != null) {
-            mNsdManager.unregisterService(mRegistrationListener);
-            mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+            if (mRegistrationListener!=null) {
+                mNsdManager.unregisterService(mRegistrationListener);
+            }
+            if (mDiscoveryListener != null) {
+                mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+            }
         }
     }
 
@@ -204,37 +213,32 @@ class ConnectionHelper {
     }
 
     public void startReceiver(final ReceiverCallback callback) {
-        if (receivingThread == null) {
-            receivingThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    BufferedReader input;
-                    try {
-                        while (!Thread.currentThread().isInterrupted()) {
-                            Socket clientSocket = new Socket(mService.getHost(),mService.getPort());
-                            input = new BufferedReader(new InputStreamReader(
-                                    clientSocket.getInputStream()));
+        receivingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BufferedReader input;
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        Socket clientSocket = new Socket(mService.getHost(), mService.getPort());
+                        input = new BufferedReader(new InputStreamReader(
+                                clientSocket.getInputStream()));
 
-                            String messageStr = null;
-                            messageStr = input.readLine();
-                            if (messageStr != null) {
+                        String messageStr = null;
+                        messageStr = input.readLine();
+                        if (messageStr != null) {
                             Log.i(TAG, "Read from the stream: " + messageStr);
-                                callback.returnResult(messageStr);
-                            } else {
-                                Log.i(TAG, "Null string");
-                                break;
-                            }
-                            input.close();
+                            callback.returnResult(messageStr);
+                        } else {
+                            Log.i(TAG, "Null string");
+                            break;
                         }
-                    } catch (IOException e) {
-                        Log.i(TAG, "Server loop error: ", e);
+                        input.close();
                     }
+                } catch (IOException e) {
+                    Log.i(TAG, "Server loop error: ", e);
                 }
-            });
-        }
-        if (!receivingThread.isAlive()) {
-            receivingThread.start();
-        }
+            }
+        });
     }
 
     public interface ReceiverCallback {
