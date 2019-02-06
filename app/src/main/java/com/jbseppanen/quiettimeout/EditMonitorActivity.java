@@ -66,7 +66,7 @@ public class EditMonitorActivity extends AppCompatActivity {
         seekBar.setProgress(monitor.getThreshold());
 
         editViewDuration = findViewById(R.id.edit_duration);
-        String displayValue = String.format("%d:%02d", monitor.getDuration() / 60000, (monitor.getDuration() % 60000) / 1000);
+        String displayValue = String.format("%02d:%02d:%02d", (int) monitor.getDuration() / 3600000, (int) ((monitor.getDuration() % 3600000) / 60000), (int) ((monitor.getDuration() % 60000) / 1000));
         editViewDuration.setText(displayValue);
 
         mProgressBar = findViewById(R.id.progress_monitor_sound_level);
@@ -83,7 +83,7 @@ public class EditMonitorActivity extends AppCompatActivity {
                             int maxAmplitude = recorder.getMaxAmplitude();
                             if (maxAmplitude > 0) {
                                 mProgressBar.setProgress(maxAmplitude);
-                                }
+                            }
                             soundThread.sleep(100);
                         }
                     } catch (InterruptedException e) {
@@ -114,8 +114,8 @@ public class EditMonitorActivity extends AppCompatActivity {
         String[] times = editViewDuration.getText().toString().split(":");
         int totalMs = 0;
         int msMultiplier = 1000;
-        for (String time : times) {
-            totalMs += Integer.parseInt(time) * msMultiplier;
+        for (int i = times.length - 1; i >= 0; --i) {
+            totalMs += Integer.parseInt(times[i]) * msMultiplier;
             msMultiplier *= 60;
         }
         monitor.setDuration(totalMs);

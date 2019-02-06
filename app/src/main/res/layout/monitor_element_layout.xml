@@ -20,7 +20,7 @@
             android:id="@+id/element_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NoteTitleHere"
+            android:text="Duration"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -29,9 +29,9 @@
             android:id="@+id/element_threshold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Note Content ..."
+            android:text="ThresholdLevel"
             android:textColor="@android:color/white"
-            android:textSize="12sp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 

@@ -42,7 +42,7 @@ public class RunMonitorActivity extends AppCompatActivity {
             public void onTick(final long millisUntilFinished) {
                 String displayValue;
                 if (millisUntilFinished > 60000) {
-                    displayValue = String.format("%d:%02d", (int) millisUntilFinished / 60000, (millisUntilFinished % 60000) / 1000);
+                    displayValue = String.format("%02d:%02d:%02d",(int) millisUntilFinished / 3600000, (int) ((millisUntilFinished % 3600000)/60000), (int) ((millisUntilFinished % 60000) / 1000));
                 } else {
                     displayValue = String.valueOf(millisUntilFinished / 1000);
                 }
@@ -147,8 +147,12 @@ public class RunMonitorActivity extends AppCompatActivity {
         soundThread = null;
         countDownTimer.cancel();
         if (recorder != null) {
-            recorder.stop();
-            recorder.release();
+            try {
+                recorder.stop();
+                recorder.release();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
         super.onPause();
     }
