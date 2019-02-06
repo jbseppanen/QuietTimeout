@@ -13,4 +13,10 @@
         android:icon="@android:drawable/ic_menu_add"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/options_monitor_remote"
+        android:title="Monitor Remote Device"
+        android:icon="@android:drawable/ic_btn_speak_now"
+        app:showAsAction="always"/>
+
 </menu>

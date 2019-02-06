@@ -158,11 +158,16 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.options_add_monitor:
-//                Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(context, EditMonitorActivity.class);
                 intent.putExtra(EditMonitorActivity.EDIT_MONITOR_KEY, new Monitor());
                 startActivity(intent);
                 break;
+
+            case R.id.options_monitor_remote:
+                Intent remoteIntent = new Intent(context, MonitorRemoteActivity.class);
+                startActivity(remoteIntent);
+                break;
+
         }
         return true;
     }
