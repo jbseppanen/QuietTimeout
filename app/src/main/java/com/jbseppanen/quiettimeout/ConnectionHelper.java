@@ -126,14 +126,12 @@ class ConnectionHelper {
                 if (!serviceInfo.getServiceType().equals(SERVICE_TYPE)) {
                     Log.i(TAG, "Unknown Service Type: " + serviceInfo.getServiceType());
                 } else if (serviceInfo.getServiceName().equals(mServiceName)) {
-//                } else {
                     Log.i(TAG, "Same machine: " + mServiceName);
                 } else if (serviceInfo.getServiceName().contains(DEFAULT_SERVICE_NAME)) {
-//                } else {
                     if (mDiscoveredServices.size() == 0) {
                         mNsdManager.resolveService(serviceInfo, mResolveListener);
+                        mDiscoveredServices.add(serviceInfo);
                     }
-                    mDiscoveredServices.add(serviceInfo);
                 }
             }
 
@@ -179,7 +177,7 @@ class ConnectionHelper {
         }
 
         if (mNsdManager != null) {
-            if (mRegistrationListener!=null) {
+            if (mRegistrationListener != null) {
                 mNsdManager.unregisterService(mRegistrationListener);
             }
             if (mDiscoveryListener != null) {
@@ -203,7 +201,11 @@ class ConnectionHelper {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        out.println(message);
+                        try {
+                            out.println(message);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }).start();
             }
