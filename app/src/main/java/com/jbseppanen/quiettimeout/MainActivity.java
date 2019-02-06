@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_night_mode:
                         return false;
                     case R.id.nav_settings:
+                        Intent intent = new Intent(context, SettingsActivity.class);
+                        startActivity(intent);
                         break;
 
                 }
