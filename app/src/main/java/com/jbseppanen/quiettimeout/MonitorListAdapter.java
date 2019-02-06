@@ -73,7 +73,9 @@ public class MonitorListAdapter extends RecyclerView.Adapter<MonitorListAdapter.
         viewHolder.parentView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-               MainActivity.viewModel.deleteMonitor(data);
+                Intent intent = new Intent(context, EditMonitorActivity.class);
+                intent.putExtra(EditMonitorActivity.EDIT_MONITOR_KEY,data);
+                activity.startActivity(intent);
                 return true;
             }
         });

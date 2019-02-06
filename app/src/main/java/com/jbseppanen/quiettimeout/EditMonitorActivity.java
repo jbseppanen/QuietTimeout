@@ -63,6 +63,7 @@ public class EditMonitorActivity extends AppCompatActivity {
         monitor = (Monitor) intent.getSerializableExtra(EDIT_MONITOR_KEY);
 
         seekBar = findViewById(R.id.seekbar_edit_sound_level);
+        seekBar.setProgress(monitor.getThreshold());
 
         editViewDuration = findViewById(R.id.edit_duration);
         String displayValue = String.format("%d:%02d", monitor.getDuration() / 60000, (monitor.getDuration() % 60000) / 1000);
