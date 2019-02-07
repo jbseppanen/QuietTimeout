@@ -22,14 +22,12 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     private MediaRecorder recorder;
     private Thread soundThread;
-    private Thread infoThread;
     private ProgressBar mProgressBar;
     private CountDownTimer countDownTimer;
     private long timeLeft;
     TextView timerDisplay;
     TimerView timerView;
-    private ConnectionHelper soundLevelHelper;
-    private ConnectionHelper monitorInfoHelper;
+    private ConnectionHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +42,6 @@ public class RunMonitorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
 
-        monitorInfoHelper = new ConnectionHelper(RemoteMonitorActivity.MONITOR_INFO_SERVICE_NAME);
-        monitorInfoHelper.registerService();
-        monitorInfoHelper.send(monitor.toString());
 
         mProgressBar.setSecondaryProgress(monitor.getThreshold());
 
@@ -93,8 +88,8 @@ public class RunMonitorActivity extends AppCompatActivity {
         initializeRecorder();
         recorder.start();
 
-        soundLevelHelper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
-        soundLevelHelper.registerService();
+        helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
+        helper.registerService();
 
         soundThread = new Thread(new Runnable() {
             @Override
@@ -110,8 +105,8 @@ public class RunMonitorActivity extends AppCompatActivity {
                                 mProgressBar.setProgress(maxAmplitude);
                                 if (((Math.abs(lastProgressUpdate - maxAmplitude) > 100) || (Math.abs(lastSentTime - timeLeft) > 5000))) {
                                     messageToSend = maxAmplitude + ":" + monitor.getThreshold() + ":" + timeLeft;
-                                    soundLevelHelper.send(messageToSend);
-//                                    soundLevelHelper.send(String.valueOf(maxAmplitude));
+                                    helper.send(messageToSend);
+//                                    helper.send(String.valueOf(maxAmplitude));
                                     lastSentTime = timeLeft;
                                     lastProgressUpdate = maxAmplitude;
                                 }
@@ -155,25 +150,6 @@ public class RunMonitorActivity extends AppCompatActivity {
             }
         });
         soundThread.start();
-
-        infoThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (infoThread != null && !infoThread.isInterrupted()) {
-                    Monitor infoMonitor = new Monitor(monitor.NO_ID, monitor.getThreshold(), (int) timeLeft);
-                    monitorInfoHelper.send(infoMonitor.toString());
-                    //send update every 15 seconds.
-                    try {
-                        infoThread.sleep(15000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-//        infoThread.start();
-
-
     }
 
     private void initializeRecorder() {
@@ -191,8 +167,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        soundLevelHelper.shutdownServices();
-//        monitorInfoHelper.shutdownServices();
+        helper.shutdownServices();
         soundThread.interrupt();
         soundThread = null;
         countDownTimer.cancel();

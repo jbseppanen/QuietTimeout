@@ -27,7 +27,7 @@ class ConnectionHelper {
     private NsdManager.ResolveListener mResolveListener;
     private ArrayList<NsdServiceInfo> mDiscoveredServices;
     private NsdServiceInfo mService;
-    String TAG = "InfoTag";
+    private String TAG = "InfoTag";
     private Thread receivingThread;
 
     public ConnectionHelper(String serviceName) {

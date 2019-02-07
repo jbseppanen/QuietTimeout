@@ -9,14 +9,12 @@ import android.widget.TextView;
 
 public class RemoteMonitorActivity extends AppCompatActivity {
     static final String SOUND_LEVEL_SERVICE_NAME = "QuietTimeout_sound_level_service";
-    static final String MONITOR_INFO_SERVICE_NAME = "QuietTimeout_monitor_info_service";
 
     private ProgressBar progressBar;
     private SeekBar seekBar;
     private TextView textView;
     private CountDownTimer countDownTimer;
     private ConnectionHelper soundLevelHelper;
-    private ConnectionHelper monitorInfoHelper;
     private long timeLeft;
 
     @Override
@@ -57,45 +55,11 @@ public class RemoteMonitorActivity extends AppCompatActivity {
                 }
             }
         });
-
- /*       monitorInfoHelper = new ConnectionHelper(MONITOR_INFO_SERVICE_NAME);
-        monitorInfoHelper.discoverServices();
-        monitorInfoHelper.startReceiver(new ConnectionHelper.ReceiverCallback() {
-            @Override
-            public void returnResult(String result) {
-                Log.i(monitorInfoHelper.TAG, "Monitor Info: " + result);
-                final String[] strings = result.split(":");
-                if (strings.length >= 3) {
-
-                    long millisUntilFinished = Long.parseLong(strings[2]);
-*//*                    final String displayValue;
-                    if (millisUntilFinished > 60000) {
-                        displayValue = String.format("%02d:%02d:%02d", millisUntilFinished / 3600000, ((millisUntilFinished % 3600000) / 60000), ((millisUntilFinished % 60000) / 1000));
-                    } else {
-                        displayValue = String.valueOf(millisUntilFinished / 1000);
-                    }*//*
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            textView.setText(displayValue);
-                            seekBar.setProgress(Integer.parseInt(strings[1]));
-                        }
-                    });
-                    if (countDownTimer == null) {
-                        countDownTimer = getCountdownTimer(millisUntilFinished);
-                    } else if ((Math.abs(timeLeft - millisUntilFinished) > 2000)) {
-                        countDownTimer.cancel();
-                        countDownTimer = getCountdownTimer(millisUntilFinished);
-                    }
-                }
-            }
-        });*/
     }
 
     @Override
     protected void onPause() {
         soundLevelHelper.shutdownServices();
-//        monitorInfoHelper.shutdownServices();
         super.onPause();
     }
 
@@ -109,12 +73,6 @@ public class RemoteMonitorActivity extends AppCompatActivity {
                         } else {
                             displayValue = String.valueOf(millisUntilFinished / 1000);
                         }
-/*                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });*/
                         textView.setText(displayValue);
                         timeLeft = millisUntilFinished;
                     }

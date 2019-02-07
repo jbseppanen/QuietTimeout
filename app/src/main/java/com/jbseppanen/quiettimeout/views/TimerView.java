@@ -58,7 +58,7 @@ public class TimerView extends View {
 
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setColor(Color.BLACK);
-        linePaint.setStrokeWidth(10); //TODO figure out why this doesn't work.
+        linePaint.setStrokeWidth(10); //TODO figure out why this doesn't work to make fill line wider.
         canvas.drawLine(0, 0, width, 0, fillPaint);
         fillPaint.setColor(getResources().getColor(R.color.colorPrimary));
         canvas.drawRect(0, level, width, height, fillPaint);
