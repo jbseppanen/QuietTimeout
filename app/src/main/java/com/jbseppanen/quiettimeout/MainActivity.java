@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.options_monitor_remote:
-                Intent remoteIntent = new Intent(context, MonitorRemoteActivity.class);
+                Intent remoteIntent = new Intent(context, RemoteMonitorActivity.class);
                 startActivity(remoteIntent);
                 break;
 

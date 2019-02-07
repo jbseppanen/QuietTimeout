@@ -26,7 +26,8 @@ public class RunMonitorActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     TextView timerDisplay;
     TimerView timerView;
-   private ConnectionHelper helper;
+    private ConnectionHelper soundLevelHelper;
+    private ConnectionHelper monitorInfoHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,10 @@ public class RunMonitorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
 
+        monitorInfoHelper = new ConnectionHelper(RemoteMonitorActivity.MONITOR_INFO_SERVICE_NAME);
+        monitorInfoHelper.registerService();
+        monitorInfoHelper.sendMessage(monitor.toString());
+
         mProgressBar.setSecondaryProgress(monitor.getThreshold());
 
         //TODO change countdown timer below to be a chronometer view.
@@ -49,12 +54,12 @@ public class RunMonitorActivity extends AppCompatActivity {
             public void onTick(final long millisUntilFinished) {
                 String displayValue;
                 if (millisUntilFinished > 60000) {
-                    displayValue = String.format("%02d:%02d:%02d",(int) millisUntilFinished / 3600000, (int) ((millisUntilFinished % 3600000)/60000), (int) ((millisUntilFinished % 60000) / 1000));
+                    displayValue = String.format("%02d:%02d:%02d", (int) millisUntilFinished / 3600000, (int) ((millisUntilFinished % 3600000) / 60000), (int) ((millisUntilFinished % 60000) / 1000));
                 } else {
                     displayValue = String.valueOf(millisUntilFinished / 1000);
                 }
                 timerDisplay.setText(displayValue);
-                float level = millisUntilFinished/ (float) monitor.getDuration();
+                float level = millisUntilFinished / (float) monitor.getDuration();
                 timerView.updateLevel(level);
             }
 
@@ -86,8 +91,8 @@ public class RunMonitorActivity extends AppCompatActivity {
         initializeRecorder();
         recorder.start();
 
-        helper = new ConnectionHelper();
-        helper.registerService();
+        soundLevelHelper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
+        soundLevelHelper.registerService();
 
         soundThread = new Thread(new Runnable() {
             @Override
@@ -98,7 +103,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                             int maxAmplitude = recorder.getMaxAmplitude();
                             if (maxAmplitude > 0) {
                                 mProgressBar.setProgress(maxAmplitude);
-                                helper.sendMessage(String.valueOf(maxAmplitude));
+                                soundLevelHelper.sendMessage(String.valueOf(maxAmplitude));
                                 if (maxAmplitude > monitor.getThreshold()) {
                                     countDownTimer.cancel();
                                     recorder.stop();
@@ -156,7 +161,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        helper.shutdownServices();
+        soundLevelHelper.shutdownServices();
         soundThread.interrupt();
         soundThread = null;
         countDownTimer.cancel();

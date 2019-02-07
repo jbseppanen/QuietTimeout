@@ -16,8 +16,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 class ConnectionHelper {
-    private static final String DEFAULT_SERVICE_NAME = "QuietTimeoutRemoteService";
-
+    private String serviceName;
     private static final String SERVICE_TYPE = "_http._tcp.";
     private ServerSocket mServerSocket;
     private int mLocalPort;
@@ -28,9 +27,12 @@ class ConnectionHelper {
     private NsdManager.ResolveListener mResolveListener;
     private ArrayList<NsdServiceInfo> mDiscoveredServices;
     private NsdServiceInfo mService;
-    private String TAG = "InfoTag";
+    String TAG = "InfoTag";
     private Thread receivingThread;
 
+    public ConnectionHelper(String serviceName) {
+        this.serviceName = serviceName;
+    }
 
     private void initializeServerSocket() {
         // Initialize a server socket on the next available port.
@@ -51,7 +53,7 @@ class ConnectionHelper {
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
 
         if (mServiceName == null) {
-            mServiceName = DEFAULT_SERVICE_NAME;
+            mServiceName = serviceName;
         }
         serviceInfo.setServiceName(mServiceName);
 
@@ -127,7 +129,7 @@ class ConnectionHelper {
                     Log.i(TAG, "Unknown Service Type: " + serviceInfo.getServiceType());
                 } else if (serviceInfo.getServiceName().equals(mServiceName)) {
                     Log.i(TAG, "Same machine: " + mServiceName);
-                } else if (serviceInfo.getServiceName().contains(DEFAULT_SERVICE_NAME)) {
+                } else if (serviceInfo.getServiceName().contains(serviceName)) {
                     if (mDiscoveredServices.size() == 0) {
                         mNsdManager.resolveService(serviceInfo, mResolveListener);
                         mDiscoveredServices.add(serviceInfo);
@@ -214,6 +216,7 @@ class ConnectionHelper {
         }
     }
 
+    //TODO Make this into a service.
     public void startReceiver(final ReceiverCallback callback) {
         receivingThread = new Thread(new Runnable() {
             @Override

@@ -44,4 +44,11 @@ public class Monitor implements Serializable {
     public void setDuration(int duration) {
         this.duration = duration;
     }
+
+
+    @Override
+    public String toString() {
+        String outputString = id + ":" + threshold + ":" + duration;
+        return outputString;
+    }
 }
