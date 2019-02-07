@@ -41,6 +41,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     private ImageView imageView;
     boolean notify;
     Ringtone ringtone;
+    boolean allowRemote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         notify = sharedPref.getBoolean("notifications_play_sound", true);
         String ringtonePath = sharedPref.getString("notifications_new_message_ringtone", "content://settings/system/notification_sound");
         ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtonePath));
-
+        allowRemote = sharedPref.getBoolean("sync_remote", true);
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
 
@@ -140,9 +141,10 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         initializeRecorder();
         recorder.start();
-
-        helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
-        helper.registerService();
+        if (allowRemote) {
+            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
+            helper.registerService();
+        }
 
         soundThread = new Thread(new Runnable() {
             @Override
@@ -150,7 +152,10 @@ public class RunMonitorActivity extends AppCompatActivity {
                 long lastSentTime = 0;
                 long lastProgressUpdate = 0;
                 String messageToSend;
-                while (soundThread != null && !soundThread.isInterrupted()) {
+                while (soundThread != null) {
+                    if (soundThread.isInterrupted()) {
+                        break;
+                    }
                     try {
                         if (recorder != null) {
                             int maxAmplitude = recorder.getMaxAmplitude();
@@ -158,8 +163,9 @@ public class RunMonitorActivity extends AppCompatActivity {
                                 mProgressBar.setProgress(maxAmplitude);
                                 if (((Math.abs(lastProgressUpdate - maxAmplitude) > 100) || (Math.abs(lastSentTime - timeLeft) > 5000))) {
                                     messageToSend = maxAmplitude + ":" + monitor.getThreshold() + ":" + timeLeft;
-                                    helper.send(messageToSend);
-//                                    helper.send(String.valueOf(maxAmplitude));
+                                    if (allowRemote) {
+                                        helper.send(messageToSend);
+                                    }
                                     lastSentTime = timeLeft;
                                     lastProgressUpdate = maxAmplitude;
                                 }
@@ -222,7 +228,9 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        helper.shutdownServices();
+        if(helper!=null) {
+            helper.shutdownServices();
+        }
         soundThread.interrupt();
         soundThread = null;
         countDownTimer.cancel();
