@@ -50,7 +50,6 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         mProgressBar.setSecondaryProgress(monitor.getThreshold());
 
-        //TODO change countdown timer below to be a chronometer view.
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
             @Override
             public void onTick(final long millisUntilFinished) {
@@ -100,13 +99,22 @@ public class RunMonitorActivity extends AppCompatActivity {
         soundThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                long lastSentTime = 0;
+                long lastProgressUpdate = 0;
+                String messageToSend;
                 while (soundThread != null && !soundThread.isInterrupted()) {
                     try {
                         if (recorder != null) {
                             int maxAmplitude = recorder.getMaxAmplitude();
                             if (maxAmplitude > 0) {
                                 mProgressBar.setProgress(maxAmplitude);
-                                soundLevelHelper.send(String.valueOf(maxAmplitude));
+                                if (((Math.abs(lastProgressUpdate - maxAmplitude) > 100) || (Math.abs(lastSentTime - timeLeft) > 5000))) {
+                                    messageToSend = maxAmplitude + ":" + monitor.getThreshold() + ":" + timeLeft;
+                                    soundLevelHelper.send(messageToSend);
+//                                    soundLevelHelper.send(String.valueOf(maxAmplitude));
+                                    lastSentTime = timeLeft;
+                                    lastProgressUpdate = maxAmplitude;
+                                }
                                 if (maxAmplitude > monitor.getThreshold()) {
                                     countDownTimer.cancel();
                                     recorder.stop();
@@ -163,7 +171,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                 }
             }
         });
-        infoThread.start();
+//        infoThread.start();
 
 
     }
@@ -184,7 +192,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         soundLevelHelper.shutdownServices();
-        monitorInfoHelper.shutdownServices();
+//        monitorInfoHelper.shutdownServices();
         soundThread.interrupt();
         soundThread = null;
         countDownTimer.cancel();
