@@ -1,6 +1,7 @@
 package com.jbseppanen.quiettimeout;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -37,6 +39,8 @@ public class RunMonitorActivity extends AppCompatActivity {
     TimerView timerView;
     private ConnectionHelper helper;
     private ImageView imageView;
+    boolean notify;
+    Ringtone ringtone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,14 @@ public class RunMonitorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_run_monitor);
 
 //        startLockTask();
+
+        SharedPreferences sharedPref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        notify = sharedPref.getBoolean("notifications_play_sound", true);
+        String ringtonePath = sharedPref.getString("notifications_new_message_ringtone", "content://settings/system/notification_sound");
+        ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtonePath));
+
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
 
@@ -76,20 +88,20 @@ public class RunMonitorActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 timerDisplay.setText("DONE!");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                        r.play();
-                        try {
-                            sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                if (notify) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ringtone.play();
+                            try {
+                                sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            ringtone.stop();
                         }
-                        r.stop();
-                    }
-                }).start();
+                    }).start();
+                }
 
                 soundThread.interrupt();
                 recorder.stop();
@@ -160,20 +172,22 @@ public class RunMonitorActivity extends AppCompatActivity {
                                             timerDisplay.setText("Too Loud!");
                                         }
                                     });
-                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    final Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ringtone.play();
+                                    if (notify) {
+                                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                        final Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                ringtone.play();
+                                            }
+                                        }).start();
+                                        sleep(2000);
+                                        if (ringtone.isPlaying()) {
+                                            ringtone.stop();
                                         }
-                                    }).start();
-                                    sleep(2000);
-                                    if (ringtone.isPlaying()) {
-                                        ringtone.stop();
-                                    }
-                                    while (ringtone.isPlaying()) {
-                                        sleep(1000);
+                                        while (ringtone.isPlaying()) {
+                                            sleep(1000);
+                                        }
                                     }
                                     initializeRecorder();
                                     recorder.start();

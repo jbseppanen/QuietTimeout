@@ -1,9 +1,11 @@
 package com.jbseppanen.quiettimeout;
 
+import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -20,12 +22,21 @@ public class RemoteMonitorActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private ConnectionHelper soundLevelHelper;
     private long timeLeft;
+    boolean notify;
+    Ringtone ringtone;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor_remote);
+
+        SharedPreferences sharedPref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        notify = sharedPref.getBoolean("notifications_play_sound", true);
+        String ringtonePath = sharedPref.getString("notifications_new_message_ringtone", "content://settings/system/notification_sound");
+        ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtonePath));
 
 
         progressBar = findViewById(R.id.progress_remote_sound_level);
@@ -69,32 +80,30 @@ public class RemoteMonitorActivity extends AppCompatActivity {
     }
 
     void updateCountdownTimer(final long time) {
-                countDownTimer = new CountDownTimer(time, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        String displayValue;
-                        if (millisUntilFinished > 60000) {
-                            displayValue = String.format("%02d:%02d:%02d", (int) millisUntilFinished / 3600000, (int) ((millisUntilFinished % 3600000) / 60000), (int) ((millisUntilFinished % 60000) / 1000));
-                        } else {
-                            displayValue = String.valueOf(millisUntilFinished / 1000);
-                        }
-                        textView.setText(displayValue);
-                        timeLeft = millisUntilFinished;
-                    }
+        countDownTimer = new CountDownTimer(time, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                String displayValue;
+                if (millisUntilFinished > 60000) {
+                    displayValue = String.format("%02d:%02d:%02d", (int) millisUntilFinished / 3600000, (int) ((millisUntilFinished % 3600000) / 60000), (int) ((millisUntilFinished % 60000) / 1000));
+                } else {
+                    displayValue = String.valueOf(millisUntilFinished / 1000);
+                }
+                textView.setText(displayValue);
+                timeLeft = millisUntilFinished;
+            }
 
+            @Override
+            public void onFinish() {
+                textView.setText("DONE!");
+                   new Thread(new Runnable() {
                     @Override
-                    public void onFinish() {
-                        textView.setText("DONE!");
-                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                        final Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ringtone.play();
-                            }
-                        }).start();
+                    public void run() {
+                        ringtone.play();
                     }
-                };
-                countDownTimer.start();
+                }).start();
+            }
+        };
+        countDownTimer.start();
     }
 }

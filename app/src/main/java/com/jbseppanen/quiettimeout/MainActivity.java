@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.options_view_log:
-                Toast.makeText(this, item.getTitle(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Not yet implemented.", Toast.LENGTH_LONG).show();
 
                 break;
             case R.id.options_add_monitor:
