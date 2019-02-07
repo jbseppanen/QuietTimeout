@@ -1,19 +1,27 @@
 package com.jbseppanen.quiettimeout;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaRecorder;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jbseppanen.quiettimeout.views.TimerView;
 
 import java.io.IOException;
+
+import static java.lang.Thread.sleep;
 
 
 public class RunMonitorActivity extends AppCompatActivity {
@@ -28,6 +36,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     TextView timerDisplay;
     TimerView timerView;
     private ConnectionHelper helper;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,8 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         timerDisplay = findViewById(R.id.text_run_timer_display);
         timerView = findViewById(R.id.timer_view);
+
+        imageView = findViewById(R.id.image_run_complete);
 
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
@@ -72,18 +83,46 @@ public class RunMonitorActivity extends AppCompatActivity {
                         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                         r.play();
                         try {
-                            Thread.sleep(5000);
+                            sleep(5000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         r.stop();
                     }
                 }).start();
+
                 soundThread.interrupt();
                 recorder.stop();
                 recorder.reset();
                 recorder.release();
                 recorder = null;
+
+                imageView.setVisibility(View.VISIBLE);
+                timerView.setVisibility(View.INVISIBLE);
+                Drawable drawable = imageView.getDrawable();
+                if (drawable instanceof AnimationDrawable) {
+                    ((AnimationDrawable) imageView.getDrawable()).start();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imageView.setVisibility(View.GONE);
+                                    timerView.setVisibility(View.VISIBLE);
+                                    ((AnimationDrawable) imageView.getDrawable()).stop();
+                                }
+                            });
+                        }
+                    }).start();
+
+                }
+
             }
         }.start();
 
@@ -129,19 +168,19 @@ public class RunMonitorActivity extends AppCompatActivity {
                                             ringtone.play();
                                         }
                                     }).start();
-                                    soundThread.sleep(2000);
+                                    sleep(2000);
                                     if (ringtone.isPlaying()) {
                                         ringtone.stop();
                                     }
                                     while (ringtone.isPlaying()) {
-                                        soundThread.sleep(1000);
+                                        sleep(1000);
                                     }
                                     initializeRecorder();
                                     recorder.start();
                                     countDownTimer.start();
                                 }
                             }
-                            soundThread.sleep(100);
+                            sleep(100);
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();

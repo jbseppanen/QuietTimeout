@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ public class RemoteMonitorActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private ConnectionHelper soundLevelHelper;
     private long timeLeft;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
