@@ -81,6 +81,7 @@ public class RemoteMonitorActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         soundLevelHelper.shutdownServices();
+        monitorInfoHelper.shutdownServices();
         super.onPause();
     }
 

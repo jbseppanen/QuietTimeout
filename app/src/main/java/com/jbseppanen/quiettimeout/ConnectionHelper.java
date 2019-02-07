@@ -188,7 +188,7 @@ class ConnectionHelper {
         }
     }
 
-    public void sendMessage(final String message) {
+    public void send(final String message) {
         try {
             if (mServerSocket != null) {
                 new Thread(new Runnable() {

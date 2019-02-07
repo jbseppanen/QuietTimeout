@@ -22,8 +22,10 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     private MediaRecorder recorder;
     private Thread soundThread;
+    private Thread infoThread;
     private ProgressBar mProgressBar;
     private CountDownTimer countDownTimer;
+    private long timeLeft;
     TextView timerDisplay;
     TimerView timerView;
     private ConnectionHelper soundLevelHelper;
@@ -44,7 +46,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         monitorInfoHelper = new ConnectionHelper(RemoteMonitorActivity.MONITOR_INFO_SERVICE_NAME);
         monitorInfoHelper.registerService();
-        monitorInfoHelper.sendMessage(monitor.toString());
+        monitorInfoHelper.send(monitor.toString());
 
         mProgressBar.setSecondaryProgress(monitor.getThreshold());
 
@@ -61,6 +63,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                 timerDisplay.setText(displayValue);
                 float level = millisUntilFinished / (float) monitor.getDuration();
                 timerView.updateLevel(level);
+                timeLeft = millisUntilFinished;
             }
 
             @Override
@@ -103,7 +106,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                             int maxAmplitude = recorder.getMaxAmplitude();
                             if (maxAmplitude > 0) {
                                 mProgressBar.setProgress(maxAmplitude);
-                                soundLevelHelper.sendMessage(String.valueOf(maxAmplitude));
+                                soundLevelHelper.send(String.valueOf(maxAmplitude));
                                 if (maxAmplitude > monitor.getThreshold()) {
                                     countDownTimer.cancel();
                                     recorder.stop();
@@ -144,6 +147,25 @@ public class RunMonitorActivity extends AppCompatActivity {
             }
         });
         soundThread.start();
+
+        infoThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (infoThread != null && !infoThread.isInterrupted()) {
+                    Monitor infoMonitor = new Monitor(monitor.NO_ID, monitor.getThreshold(), (int) timeLeft);
+                    monitorInfoHelper.send(infoMonitor.toString());
+                    //send update every 15 seconds.
+                    try {
+                        infoThread.sleep(15000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        infoThread.start();
+
+
     }
 
     private void initializeRecorder() {
@@ -162,6 +184,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         soundLevelHelper.shutdownServices();
+        monitorInfoHelper.shutdownServices();
         soundThread.interrupt();
         soundThread = null;
         countDownTimer.cancel();
