@@ -34,6 +34,8 @@ public class RunMonitorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run_monitor);
 
+//        startLockTask();
+
         mProgressBar = findViewById(R.id.progress_run_sound_level);
 
         timerDisplay = findViewById(R.id.text_run_timer_display);
@@ -70,7 +72,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                         r.play();
                         try {
-                            Thread.sleep(10000);
+                            Thread.sleep(5000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

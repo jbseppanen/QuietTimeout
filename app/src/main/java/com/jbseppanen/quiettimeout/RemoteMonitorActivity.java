@@ -1,5 +1,8 @@
 package com.jbseppanen.quiettimeout;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -79,6 +82,15 @@ public class RemoteMonitorActivity extends AppCompatActivity {
 
                     @Override
                     public void onFinish() {
+                        textView.setText("DONE!");
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        final Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ringtone.play();
+                            }
+                        }).start();
                     }
                 };
                 countDownTimer.start();
