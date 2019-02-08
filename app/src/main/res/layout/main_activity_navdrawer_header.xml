@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="175dp"
-    android:orientation="vertical"
     android:background="@color/colorPrimary"
+    android:orientation="vertical"
     app:layout_constraintTop_toTopOf="parent">
 
     <ImageView
         android:id="@+id/image_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="36sp"
+        android:paddingTop="20dp"
+
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,7 +22,10 @@
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
         android:text="Quiet Timeout"
+        android:textColor="@android:color/black"
+        android:textSize="32sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_header" />
+
 
 </android.support.constraint.ConstraintLayout>

@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_REQUEST_CODE);
-        } else {
-            Toast.makeText(context, "Recording permission was granted", Toast.LENGTH_SHORT).show();
         }
 
         toolbar = findViewById(R.id.toolbar);
@@ -150,9 +148,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.options_view_log:
-                Toast.makeText(this, "Not yet implemented.", Toast.LENGTH_LONG).show();
-
+            case R.id.options_view_settings:
+//                Toast.makeText(this, "Not yet implemented.", Toast.LENGTH_LONG).show();
+                Intent settingsIntent = new Intent(context, SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
             case R.id.options_add_monitor:
                 Intent intent = new Intent(context, EditMonitorActivity.class);
