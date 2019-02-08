@@ -80,4 +80,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="copyright">© 2019 by Jacob Seppanen</string>
+    <string name="lost_connection">No Connection</string>
 </resources>

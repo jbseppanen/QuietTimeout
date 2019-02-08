@@ -1,8 +1,12 @@
 package com.jbseppanen.quiettimeout;
 
+import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.IBinder;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -11,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,7 +31,7 @@ class ConnectionHelper {
     private NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
     private ArrayList<NsdServiceInfo> mDiscoveredServices;
-    private NsdServiceInfo mService;
+    NsdServiceInfo mService;
     private String TAG = "InfoTag";
     private Thread receivingThread;
 
@@ -94,8 +99,8 @@ class ConnectionHelper {
         };
     }
 
-    public void discoverServices() {
-        initializeResolveListener();
+    public void discoverServices(final ConnectionCallback callback) {
+        initializeResolveListener(callback);
 
         if (mNsdManager == null) {
             mNsdManager = (NsdManager) MainActivity.context.getSystemService(Context.NSD_SERVICE);
@@ -141,13 +146,16 @@ class ConnectionHelper {
             public void onServiceLost(NsdServiceInfo serviceInfo) {
                 Log.i(TAG, "onServiceLost: " + serviceInfo);
                 mDiscoveredServices.remove(serviceInfo);
+                if (serviceInfo == mService) {
+                    callback.returnResult(null);
+                }
             }
         };
         mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
 
     }
 
-    private void initializeResolveListener() {
+    private void initializeResolveListener(final ConnectionCallback callback) {
         mResolveListener = new NsdManager.ResolveListener() {
 
             @Override
@@ -164,9 +172,10 @@ class ConnectionHelper {
                     return;
                 }
                 mService = serviceInfo;
-                if (receivingThread != null) {
+                callback.returnResult(mService);
+/*                if (receivingThread != null) {
                     receivingThread.start();
-                }
+                }*/
             }
         };
     }
@@ -216,39 +225,7 @@ class ConnectionHelper {
         }
     }
 
-    //TODO Make this into a service.
-    public void startReceiver(final ReceiverCallback callback) {
-        receivingThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader input;
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        Socket clientSocket = new Socket(mService.getHost(), mService.getPort());
-                        input = new BufferedReader(new InputStreamReader(
-                                clientSocket.getInputStream()));
-
-                        String messageStr = null;
-                        messageStr = input.readLine();
-                        if (messageStr != null) {
-                            Log.i(TAG, "Read from the stream: " + messageStr);
-                            callback.returnResult(messageStr);
-                        } else {
-                            Log.i(TAG, "Null string");
-                            break;
-                        }
-                        input.close();
-                    }
-                } catch (IOException e) {
-                    Log.i(TAG, "Server loop error: ", e);
-                }
-            }
-        });
+    public interface ConnectionCallback {
+        void returnResult(NsdServiceInfo result);
     }
-
-    public interface ReceiverCallback {
-        void returnResult(String result);
-    }
-
-
 }

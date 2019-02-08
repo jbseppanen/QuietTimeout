@@ -6,7 +6,7 @@ public class Monitor implements Serializable {
 
     public static final int NO_ID = -1;
 
-    public static final int DEFAULT_THRESHOLD = 1000;
+    public static final int DEFAULT_THRESHOLD = 5000;
     private int threshold, duration, id;
 
     public Monitor(int id, int threshold, int duration) {
@@ -17,7 +17,7 @@ public class Monitor implements Serializable {
 
     public Monitor() {
         this.threshold = DEFAULT_THRESHOLD;
-        this.duration = 6000;
+        this.duration = 60000;
         this.id = NO_ID;
     }
 

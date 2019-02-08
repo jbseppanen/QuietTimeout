@@ -1,14 +1,19 @@
 package com.jbseppanen.quiettimeout;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.nsd.NsdServiceInfo;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -45,26 +50,23 @@ public class RemoteMonitorActivity extends AppCompatActivity {
         textView = findViewById(R.id.text_remote_duration);
 
         soundLevelHelper = new ConnectionHelper(SOUND_LEVEL_SERVICE_NAME);
-        soundLevelHelper.discoverServices();
-
-        soundLevelHelper.startReceiver(new ConnectionHelper.ReceiverCallback() {
+        soundLevelHelper.discoverServices(new ConnectionHelper.ConnectionCallback() {
             @Override
-            public void returnResult(final String result) {
-                final String[] strings = result.split(":");
-                if (strings.length >= 3) {
-                    final int progress = Integer.parseInt(strings[0]);
-                    final long millisUntilFinished = Long.parseLong(strings[2]);
-
+            public void returnResult(NsdServiceInfo result) {
+                Messenger messenger = new Messenger(new IncomingHandler());
+                Intent intent = new Intent(getApplicationContext(), ReceivingService.class);
+                intent.putExtra(ReceivingService.MESSENGER_KEY, messenger);
+                intent.putExtra(ReceivingService.SERVICE_INFO_KEY, result);
+                if (result != null) {
+                    startService(intent);
+                } else {
+                    stopService(intent);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            progressBar.setProgress(progress);
-                            seekBar.setProgress(Integer.parseInt(strings[1]));
-                            if (countDownTimer == null) {
-                                updateCountdownTimer(millisUntilFinished);
-                            } else if ((Math.abs(timeLeft - millisUntilFinished) > 2000)) {
+                            textView.setText(getString(R.string.lost_connection));
+                            if (countDownTimer != null) {
                                 countDownTimer.cancel();
-                                updateCountdownTimer(millisUntilFinished);
                             }
                         }
                     });
@@ -75,8 +77,16 @@ public class RemoteMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        soundLevelHelper.shutdownServices();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        soundLevelHelper.shutdownServices();
+        Intent intent = new Intent(getApplicationContext(), ReceivingService.class);
+        intent.putExtra(ReceivingService.MESSENGER_KEY, (Parcelable[]) null);
+        startService(intent);
+        super.onStop();
     }
 
     void updateCountdownTimer(final long time) {
@@ -96,7 +106,7 @@ public class RemoteMonitorActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 textView.setText("DONE!");
-                   new Thread(new Runnable() {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
                         ringtone.play();
@@ -105,5 +115,32 @@ public class RemoteMonitorActivity extends AppCompatActivity {
             }
         };
         countDownTimer.start();
+    }
+
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+            String result = (String) bundle.get(ReceivingService.MESSAGE_KEY);
+            final String[] strings = result.split(":");
+            if (strings.length >= 3) {
+                final int progress = Integer.parseInt(strings[0]);
+                final long millisUntilFinished = Long.parseLong(strings[2]);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setProgress(progress);
+                        seekBar.setProgress(Integer.parseInt(strings[1]));
+                        if (countDownTimer == null) {
+                            updateCountdownTimer(millisUntilFinished);
+                        } else if ((Math.abs(timeLeft - millisUntilFinished) > 2000)) {
+                            countDownTimer.cancel();
+                            updateCountdownTimer(millisUntilFinished);
+                        }
+                    }
+                });
+            }
+        }
     }
 }

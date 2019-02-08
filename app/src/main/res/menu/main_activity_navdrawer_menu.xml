@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="all">
-        <item
+<!--        <item
             android:id="@+id/first_drawer_item"
             android:icon="@android:drawable/ic_lock_lock"
-            android:title="Lock" />
+            android:title="Lock" />-->
         <item
             android:id="@+id/nav_settings"
             android:icon="@android:drawable/ic_menu_preferences"
