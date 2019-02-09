@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView listView;
     private MonitorListAdapter listAdapter;
     static MonitorViewModel viewModel;
+    boolean firstTime = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_REQUEST_CODE);
+            firstTime = true;
         }
 
         toolbar = findViewById(R.id.toolbar);
@@ -81,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
-                Toast.makeText(context, menuItem.getTitle(), Toast.LENGTH_LONG).show();
                 menuItem.setChecked(!menuItem.isChecked());
 
                 switch (menuItem.getItemId()) {
@@ -125,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         viewModel.getNotesList().observe(this, observer);
+
+        if (firstTime) {
+           findViewById(R.id.help_view).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -148,12 +153,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.options_view_settings:
-//                Toast.makeText(this, "Not yet implemented.", Toast.LENGTH_LONG).show();
-                Intent settingsIntent = new Intent(context, SettingsActivity.class);
-                startActivity(settingsIntent);
+            case R.id.options_view_help:
+                Intent helpIntent = new Intent(context, AboutActivity.class);
+                int layoutId = R.layout.help_layout;
+                helpIntent.putExtra(AboutActivity.LAYOUT_KEY, layoutId);
+                startActivity(helpIntent);
                 break;
             case R.id.options_add_monitor:
+                findViewById(R.id.help_view).setVisibility(View.GONE);
                 Intent intent = new Intent(context, EditMonitorActivity.class);
                 intent.putExtra(EditMonitorActivity.EDIT_MONITOR_KEY, new Monitor());
                 startActivity(intent);
