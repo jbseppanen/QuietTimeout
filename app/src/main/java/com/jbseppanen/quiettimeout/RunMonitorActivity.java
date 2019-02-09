@@ -1,5 +1,6 @@
 package com.jbseppanen.quiettimeout;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimatedImageDrawable;
@@ -12,9 +13,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -109,33 +117,41 @@ public class RunMonitorActivity extends AppCompatActivity {
                 recorder.reset();
                 recorder.release();
                 recorder = null;
-
-                imageView.setVisibility(View.VISIBLE);
                 timerView.setVisibility(View.INVISIBLE);
-                Drawable drawable = imageView.getDrawable();
-                if (drawable instanceof AnimationDrawable) {
-                    ((AnimationDrawable) imageView.getDrawable()).start();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    imageView.setVisibility(View.GONE);
-                                    timerView.setVisibility(View.VISIBLE);
-                                    ((AnimationDrawable) imageView.getDrawable()).stop();
-                                }
-                            });
-                        }
-                    }).start();
+                imageView.setVisibility(View.VISIBLE);
 
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.animate()
+                                .alpha(1f)
+                                .scaleX(15)
+                                .scaleY(15)
+                                .translationZ(10f)
+                                .setInterpolator(new OvershootInterpolator(10))
+                                .setStartDelay(200)
+                                .setDuration(1000)
+                                .setListener(new Animator.AnimatorListener() {
+                                    @Override
+                                    public void onAnimationStart(Animator animation) {
+                                    }
 
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationCancel(Animator animation) {
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animator animation) {
+                                    }
+                                })
+                                .start();
+                    }
+                });
             }
         }.start();
 
@@ -228,7 +244,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        if(helper!=null) {
+        if (helper != null) {
             helper.shutdownServices();
         }
         soundThread.interrupt();
