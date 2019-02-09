@@ -62,14 +62,14 @@ public class EditMonitorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         monitor = (Monitor) intent.getSerializableExtra(EDIT_MONITOR_KEY);
 
-        seekBar = findViewById(R.id.seekbar_edit_sound_level);
+        seekBar = findViewById(R.id.seekbar_edit_sound_threshold);
         seekBar.setProgress(monitor.getThreshold());
 
         editViewDuration = findViewById(R.id.edit_duration);
         String displayValue = String.format("%02d:%02d:%02d", (int) monitor.getDuration() / 3600000, (int) ((monitor.getDuration() % 3600000) / 60000), (int) ((monitor.getDuration() % 60000) / 1000));
         editViewDuration.setText(displayValue);
 
-        mProgressBar = findViewById(R.id.progress_monitor_sound_level);
+        mProgressBar = findViewById(R.id.progress_sound_level);
 
         initializeRecorder();
         recorder.start();

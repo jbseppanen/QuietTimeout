@@ -25,6 +25,7 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.jbseppanen.quiettimeout.views.TimerView;
@@ -41,6 +42,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     private MediaRecorder recorder;
     private Thread soundThread;
     private ProgressBar mProgressBar;
+    private SeekBar seekBar;
     private CountDownTimer countDownTimer;
     private long timeLeft;
     TextView timerDisplay;
@@ -58,6 +60,9 @@ public class RunMonitorActivity extends AppCompatActivity {
 
 //        startLockTask();
 
+        Intent intent = getIntent();
+        final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
+
         SharedPreferences sharedPref =
                 PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -67,17 +72,14 @@ public class RunMonitorActivity extends AppCompatActivity {
         allowRemote = sharedPref.getBoolean("sync_remote", true);
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
+        seekBar = findViewById(R.id.seekbar_run_threshold);
+        seekBar.setEnabled(false);
+        seekBar.setProgress(monitor.getThreshold());
 
         timerDisplay = findViewById(R.id.text_run_timer_display);
         timerView = findViewById(R.id.timer_view);
 
         imageView = findViewById(R.id.image_run_complete);
-
-        Intent intent = getIntent();
-        final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
-
-
-        mProgressBar.setSecondaryProgress(monitor.getThreshold());
 
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
             @Override

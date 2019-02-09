@@ -20,9 +20,9 @@
         android:layout_height="wrap_content"
         android:text="Time Left"
         android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@id/text_remote_duration"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/text_remote_duration" />
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/text_remote_duration"
@@ -32,9 +32,19 @@
         android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintVertical_bias=".25"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".25" />
+
+    <TextView
+        android:id="@+id/text_remote_threshold_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sound level for reset"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/seekbar_remote_threshold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <SeekBar
         android:id="@+id/seekbar_remote_threshold"
@@ -42,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:max="32768"
-        android:paddingBottom="25dp"
+        android:thumb="@drawable/ic_black_triangle"
         app:layout_constraintBottom_toTopOf="@id/progress_remote_sound_level"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -54,10 +64,20 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:max="32768"
-        android:paddingBottom="100dp"
         android:progressDrawable="@drawable/progressbar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/text_remote_sound_level_label"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/text_remote_sound_level_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="24dp"
+        android:text="Current sound level"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 
 </android.support.constraint.ConstraintLayout>
