@@ -4,4 +4,8 @@
         <attr name="level" format="integer" />
     </declare-styleable>
 
+    <!--<declare-styleable name="PieTimerView">-->
+        <!--<attr name="level" format="integer" />-->
+    <!--</declare-styleable>-->
+
 </resources>

@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.jbseppanen.quiettimeout.views.PieProgressDrawable;
 import com.jbseppanen.quiettimeout.views.TimerView;
 
 import java.io.IOException;
@@ -46,7 +48,8 @@ public class RunMonitorActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private long timeLeft;
     TextView timerDisplay;
-    TimerView timerView;
+//    TimerView timerView;
+    ImageView timerView;
     private ConnectionHelper helper;
     private ImageView imageView;
     boolean notify;
@@ -77,7 +80,13 @@ public class RunMonitorActivity extends AppCompatActivity {
         seekBar.setProgress(monitor.getThreshold());
 
         timerDisplay = findViewById(R.id.text_run_timer_display);
+
+        final PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
+        pieProgressDrawable.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+
+
         timerView = findViewById(R.id.timer_view);
+        timerView.setImageDrawable(pieProgressDrawable);
 
         imageView = findViewById(R.id.image_run_complete);
 
@@ -92,7 +101,11 @@ public class RunMonitorActivity extends AppCompatActivity {
                 }
                 timerDisplay.setText(displayValue);
                 float level = millisUntilFinished / (float) monitor.getDuration();
-                timerView.updateLevel(level);
+                pieProgressDrawable.setLevel((int) (level*100));
+                timerView.invalidate();
+//                pieProgressDrawable.setLevel(50);
+                System.out.println((int) (level*100));
+//                timerView.setProgress((int) level);
                 timeLeft = millisUntilFinished;
             }
 

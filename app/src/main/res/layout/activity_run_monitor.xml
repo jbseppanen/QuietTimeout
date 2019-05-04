@@ -18,7 +18,21 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.jbseppanen.quiettimeout.views.TimerView
+    <!--<com.jbseppanen.quiettimeout.views.TimerView-->
+        <!--android:id="@+id/timer_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_marginLeft="50dp"-->
+        <!--android:layout_marginTop="100dp"-->
+        <!--android:layout_marginRight="50dp"-->
+        <!--android:layout_marginBottom="125dp"-->
+        <!--app:layout_constraintBottom_toTopOf="@id/progress_run_sound_level"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@id/text_run_timer_display"-->
+        <!--app:level="50" />-->
+
+    <ImageView
         android:id="@+id/timer_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,8 +43,7 @@
         app:layout_constraintBottom_toTopOf="@id/progress_run_sound_level"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_run_timer_display"
-        app:level="50" />
+        app:layout_constraintTop_toBottomOf="@id/text_run_timer_display"/>
 
     <TextView
         android:id="@+id/text_run_threshold_label"
