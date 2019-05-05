@@ -1,6 +1,7 @@
 package com.jbseppanen.quiettimeout;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimatedImageDrawable;
@@ -18,6 +19,7 @@ import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -83,6 +85,9 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         final PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
         pieProgressDrawable.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        pieProgressDrawable.setBorderWidth(10f, metrics);
 
 
         timerView = findViewById(R.id.timer_view);
@@ -91,6 +96,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         imageView = findViewById(R.id.image_run_complete);
 
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onTick(final long millisUntilFinished) {
                 String displayValue;
