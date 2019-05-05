@@ -21,18 +21,11 @@ public class PieProgressDrawable extends Drawable {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
-    /**
-     * Set the border width.
-     * @param widthDp in dip for the pie border
-     */
     public void setBorderWidth(float widthDp, DisplayMetrics dm) {
         float borderWidth = widthDp * dm.density;
         mPaint.setStrokeWidth(borderWidth);
     }
 
-    /**
-     * @param color you want the pie to be drawn in
-     */
     public void setColor(int color) {
         mPaint.setColor(color);
     }
@@ -47,10 +40,6 @@ public class PieProgressDrawable extends Drawable {
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawArc(mInnerBoundsF, START_ANGLE, mDrawTo, true, mPaint);
 
-        // Draw inner oval and text on top of the pie (or add any other
-        // decorations such as a stroke) here..
-        // Don't forget to rotate the canvas back if you plan to add text!
-        // ...
     }
 
     @Override
