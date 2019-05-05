@@ -48,7 +48,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private long timeLeft;
     TextView timerDisplay;
-//    TimerView timerView;
+    //    TimerView timerView;
     ImageView timerView;
     private ConnectionHelper helper;
     private ImageView imageView;
@@ -101,10 +101,10 @@ public class RunMonitorActivity extends AppCompatActivity {
                 }
                 timerDisplay.setText(displayValue);
                 float level = millisUntilFinished / (float) monitor.getDuration();
-                pieProgressDrawable.setLevel((int) (level*100));
+                pieProgressDrawable.setLevel((int) (100 - level * 100));
                 timerView.invalidate();
 //                pieProgressDrawable.setLevel(50);
-                System.out.println((int) (level*100));
+                System.out.println((int) (level * 100));
 //                timerView.setProgress((int) level);
                 timeLeft = millisUntilFinished;
             }
