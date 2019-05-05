@@ -36,7 +36,6 @@ public class RunMonitorActivity extends AppCompatActivity {
     private MediaRecorder recorder;
     private Thread soundThread;
     private ProgressBar mProgressBar;
-    private SeekBar seekBar;
     private CountDownTimer countDownTimer;
     private long timeLeft;
     TextView timerDisplay;
@@ -69,7 +68,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         allowRemote = sharedPref.getBoolean("sync_remote", true);
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
-        seekBar = findViewById(R.id.seekbar_run_threshold);
+        SeekBar seekBar = findViewById(R.id.seekbar_run_threshold);
         seekBar.setEnabled(false);
         seekBar.setProgress(monitor.getThreshold());
 
@@ -84,6 +83,14 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         timerView = findViewById(R.id.timer_view);
         timerView.setImageDrawable(pieProgressDrawable);
+
+        timerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.cancel();
+                countDownTimer.start();
+            }
+        });
 
         imageView = findViewById(R.id.image_run_complete);
 
@@ -101,9 +108,6 @@ public class RunMonitorActivity extends AppCompatActivity {
                 float level = millisUntilFinished / (float) monitor.getDuration();
                 pieProgressDrawable.setLevel((int) (100 - level * 100));
                 timerView.invalidate();
-//                pieProgressDrawable.setLevel(50);
-                System.out.println((int) (level * 100));
-//                timerView.setProgress((int) level);
                 timeLeft = millisUntilFinished;
             }
 
@@ -126,9 +130,16 @@ public class RunMonitorActivity extends AppCompatActivity {
                 }
 
                 soundThread.interrupt();
-                recorder.stop();
-                recorder.reset();
-                recorder.release();
+
+                if (recorder != null) {
+                    try {
+                        recorder.stop();
+                        recorder.reset();
+                        recorder.release();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                }
                 recorder = null;
                 timerView.setVisibility(View.INVISIBLE);
                 imageView.setVisibility(View.VISIBLE);
@@ -166,14 +177,12 @@ public class RunMonitorActivity extends AppCompatActivity {
                     }
                 });
             }
-        }.start();
+        };
 
-        initializeRecorder();
-        recorder.start();
-        if (allowRemote) {
-            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
-            helper.registerService(context);
-        }
+//        if (allowRemote) {
+//            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
+//            helper.registerService(context);
+//        }
 
         soundThread = new Thread(new Runnable() {
             @Override
@@ -181,10 +190,11 @@ public class RunMonitorActivity extends AppCompatActivity {
                 long lastSentTime = 0;
                 long lastProgressUpdate = 0;
                 String messageToSend;
-                while (soundThread != null) {
-                    if (soundThread.isInterrupted()) {
-                        break;
-                    }
+                initializeRecorder();
+                recorder.start();
+                countDownTimer.start();
+//                while (soundThread != null)
+                while (!soundThread.isInterrupted()) {
                     try {
                         if (recorder != null) {
                             int maxAmplitude = recorder.getMaxAmplitude();
@@ -233,13 +243,15 @@ public class RunMonitorActivity extends AppCompatActivity {
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    } catch (RuntimeException e) {
-                        e.printStackTrace();
+                        break;
                     }
+//                    catch (RuntimeException e) {
+//                        e.printStackTrace();
+//                        break;
+//                    }
                 }
             }
         });
-        soundThread.start();
     }
 
     private void initializeRecorder() {
@@ -257,20 +269,36 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        super.onPause();
         if (helper != null) {
             helper.shutdownServices();
         }
         soundThread.interrupt();
-        soundThread = null;
         countDownTimer.cancel();
         if (recorder != null) {
             try {
                 recorder.stop();
+                recorder.reset();
                 recorder.release();
+//                recorder = null;
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
         }
-        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if (allowRemote) {
+            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
+            helper.registerService(context);
+        }
+        if (soundThread.getState() == Thread.State.NEW) {
+            soundThread.start();
+        } else {
+            countDownTimer.start();
+            soundThread.run();
+        }
+        super.onResume();
     }
 }
