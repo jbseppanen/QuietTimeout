@@ -1,6 +1,7 @@
 package com.jbseppanen.quiettimeout;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -10,9 +11,9 @@ import java.util.ArrayList;
 public class MonitorsDbDao {
     private static SQLiteDatabase db;
 
-    public static void initializeInstance() {
+    public static void initializeInstance(Context context) {
         if (db == null) {
-            MonitorsDbHelper helper = new MonitorsDbHelper();
+            MonitorsDbHelper helper = new MonitorsDbHelper(context);
             db = helper.getWritableDatabase();
         }
     }

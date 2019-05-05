@@ -1,5 +1,6 @@
 package com.jbseppanen.quiettimeout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
@@ -29,12 +30,15 @@ public class RemoteMonitorActivity extends AppCompatActivity {
     private long timeLeft;
     boolean notify;
     Ringtone ringtone;
+    private Context context;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor_remote);
+
+        context = this;
 
         SharedPreferences sharedPref =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -50,7 +54,7 @@ public class RemoteMonitorActivity extends AppCompatActivity {
         textView = findViewById(R.id.text_remote_duration);
 
         soundLevelHelper = new ConnectionHelper(SOUND_LEVEL_SERVICE_NAME);
-        soundLevelHelper.discoverServices(new ConnectionHelper.ConnectionCallback() {
+        soundLevelHelper.discoverServices(context, new ConnectionHelper.ConnectionCallback() {
             @Override
             public void returnResult(NsdServiceInfo result) {
                 Messenger messenger = new Messenger(new IncomingHandler());

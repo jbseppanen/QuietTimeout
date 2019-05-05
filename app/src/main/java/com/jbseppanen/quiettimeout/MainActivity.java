@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RECORD_REQUEST_CODE = 1;
 
     private Toolbar toolbar;
-    static Context context;
+    private Context context;
     private DrawerLayout drawerLayout;
     private GridLayoutManager layoutManager;
     private RecyclerView listView;
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         context = this;
+        MonitorsDbDao.initializeInstance(context);
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_REQUEST_CODE);
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getNotesList().observe(this, observer);
 
         if (firstTime) {
-           findViewById(R.id.help_view).setVisibility(View.VISIBLE);
+            findViewById(R.id.help_view).setVisibility(View.VISIBLE);
         }
     }
 

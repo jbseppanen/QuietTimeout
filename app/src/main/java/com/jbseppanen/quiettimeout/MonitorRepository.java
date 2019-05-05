@@ -9,7 +9,7 @@ public class MonitorRepository {
 
     public MutableLiveData<ArrayList<Monitor>> getMonitors() {
         liveDataList = new MutableLiveData<>();
-        MonitorsDbDao.initializeInstance();
+//        MonitorsDbDao.initializeInstance();
         liveDataList.postValue(getNotesFromCache());
         return liveDataList;
     }

@@ -2,6 +2,7 @@ package com.jbseppanen.quiettimeout;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaRecorder;
@@ -46,6 +47,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     boolean notify;
     Ringtone ringtone;
     boolean allowRemote;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_run_monitor);
 
 //        startLockTask();
+        context = this;
 
         Intent intent = getIntent();
         final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
@@ -169,7 +172,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         recorder.start();
         if (allowRemote) {
             helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
-            helper.registerService();
+            helper.registerService(context);
         }
 
         soundThread = new Thread(new Runnable() {

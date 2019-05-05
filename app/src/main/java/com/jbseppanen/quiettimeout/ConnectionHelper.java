@@ -45,7 +45,7 @@ class ConnectionHelper {
 
     }
 
-    public void registerService() {
+    public void registerService(Context context) {
         initializeRegistrationListener();
         initializeServerSocket();
         NsdServiceInfo serviceInfo = new NsdServiceInfo();
@@ -57,7 +57,7 @@ class ConnectionHelper {
 
         serviceInfo.setServiceType(SERVICE_TYPE);
         serviceInfo.setPort(mLocalPort);
-        mNsdManager = (NsdManager) MainActivity.context.getSystemService(Context.NSD_SERVICE);
+        mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
 
         mNsdManager.registerService(
                 serviceInfo, NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
@@ -92,11 +92,11 @@ class ConnectionHelper {
         };
     }
 
-    public void discoverServices(final ConnectionCallback callback) {
+    public void discoverServices(Context context, final ConnectionCallback callback) {
         initializeResolveListener(callback);
 
         if (mNsdManager == null) {
-            mNsdManager = (NsdManager) MainActivity.context.getSystemService(Context.NSD_SERVICE);
+            mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
         }
         mDiscoveredServices = new ArrayList<>();
         mDiscoveryListener = new NsdManager.DiscoveryListener() {
