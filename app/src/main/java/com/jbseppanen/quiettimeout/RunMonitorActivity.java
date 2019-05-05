@@ -47,6 +47,7 @@ public class RunMonitorActivity extends AppCompatActivity {
     Ringtone ringtone;
     boolean allowRemote;
     private Context context;
+    private Monitor monitor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class RunMonitorActivity extends AppCompatActivity {
         context = this;
 
         Intent intent = getIntent();
-        final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
+        monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
 
         SharedPreferences sharedPref =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -289,16 +290,24 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        super.onResume();
         if (allowRemote) {
             helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
             helper.registerService(context);
         }
-        if (soundThread.getState() == Thread.State.NEW) {
-            soundThread.start();
+        if (soundThread.getState() != Thread.State.NEW) {
+            Intent intent = new Intent(context, RunMonitorActivity.class);
+            intent.putExtra(RunMonitorActivity.RUN_MONITOR_KEY, monitor);
+            startActivity(intent);
+            finish();
         } else {
-            countDownTimer.start();
-            soundThread.run();
+            soundThread.start();
+//            if (soundThread.getState() == Thread.State.NEW) {
+//                soundThread.start();
+//            } else {
+//                countDownTimer.start();
+//                soundThread.run();
+//            }
         }
-        super.onResume();
     }
 }
