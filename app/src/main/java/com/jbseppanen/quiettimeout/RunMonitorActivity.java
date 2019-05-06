@@ -77,6 +77,7 @@ public class RunMonitorActivity extends AppCompatActivity {
 
         final PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
         pieProgressDrawable.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        pieProgressDrawable.setBorderPaintColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         pieProgressDrawable.setBorderWidth(10f, metrics);
