@@ -1,11 +1,10 @@
 package com.jbseppanen.quiettimeout;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.AnimatedImageDrawable;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaRecorder;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -13,22 +12,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.jbseppanen.quiettimeout.views.TimerView;
+import com.jbseppanen.quiettimeout.views.PieProgressDrawable;
 
 import java.io.IOException;
 
@@ -42,16 +36,18 @@ public class RunMonitorActivity extends AppCompatActivity {
     private MediaRecorder recorder;
     private Thread soundThread;
     private ProgressBar mProgressBar;
-    private SeekBar seekBar;
     private CountDownTimer countDownTimer;
     private long timeLeft;
     TextView timerDisplay;
-    TimerView timerView;
+    //    TimerView timerView;
+    ImageView timerView;
     private ConnectionHelper helper;
     private ImageView imageView;
     boolean notify;
     Ringtone ringtone;
     boolean allowRemote;
+    private Context context;
+    private Monitor monitor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +55,10 @@ public class RunMonitorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_run_monitor);
 
 //        startLockTask();
+        context = this;
 
         Intent intent = getIntent();
-        final Monitor monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
+        monitor = (Monitor) intent.getSerializableExtra(RUN_MONITOR_KEY);
 
         SharedPreferences sharedPref =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -72,16 +69,35 @@ public class RunMonitorActivity extends AppCompatActivity {
         allowRemote = sharedPref.getBoolean("sync_remote", true);
 
         mProgressBar = findViewById(R.id.progress_run_sound_level);
-        seekBar = findViewById(R.id.seekbar_run_threshold);
+        SeekBar seekBar = findViewById(R.id.seekbar_run_threshold);
         seekBar.setEnabled(false);
         seekBar.setProgress(monitor.getThreshold());
 
         timerDisplay = findViewById(R.id.text_run_timer_display);
+
+        final PieProgressDrawable pieProgressDrawable = new PieProgressDrawable();
+        pieProgressDrawable.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        pieProgressDrawable.setBorderPaintColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        pieProgressDrawable.setBorderWidth(10f, metrics);
+
+
         timerView = findViewById(R.id.timer_view);
+        timerView.setImageDrawable(pieProgressDrawable);
+
+        timerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.cancel();
+                countDownTimer.start();
+            }
+        });
 
         imageView = findViewById(R.id.image_run_complete);
 
         countDownTimer = new CountDownTimer(monitor.getDuration(), 1000) {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onTick(final long millisUntilFinished) {
                 String displayValue;
@@ -92,7 +108,8 @@ public class RunMonitorActivity extends AppCompatActivity {
                 }
                 timerDisplay.setText(displayValue);
                 float level = millisUntilFinished / (float) monitor.getDuration();
-                timerView.updateLevel(level);
+                pieProgressDrawable.setLevel((int) (100 - level * 100));
+                timerView.invalidate();
                 timeLeft = millisUntilFinished;
             }
 
@@ -115,9 +132,16 @@ public class RunMonitorActivity extends AppCompatActivity {
                 }
 
                 soundThread.interrupt();
-                recorder.stop();
-                recorder.reset();
-                recorder.release();
+
+                if (recorder != null) {
+                    try {
+                        recorder.stop();
+                        recorder.reset();
+                        recorder.release();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                }
                 recorder = null;
                 timerView.setVisibility(View.INVISIBLE);
                 imageView.setVisibility(View.VISIBLE);
@@ -155,14 +179,7 @@ public class RunMonitorActivity extends AppCompatActivity {
                     }
                 });
             }
-        }.start();
-
-        initializeRecorder();
-        recorder.start();
-        if (allowRemote) {
-            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
-            helper.registerService();
-        }
+        };
 
         soundThread = new Thread(new Runnable() {
             @Override
@@ -170,10 +187,11 @@ public class RunMonitorActivity extends AppCompatActivity {
                 long lastSentTime = 0;
                 long lastProgressUpdate = 0;
                 String messageToSend;
-                while (soundThread != null) {
-                    if (soundThread.isInterrupted()) {
-                        break;
-                    }
+                initializeRecorder();
+                recorder.start();
+                countDownTimer.start();
+//                while (soundThread != null)
+                while (!soundThread.isInterrupted()) {
                     try {
                         if (recorder != null) {
                             int maxAmplitude = recorder.getMaxAmplitude();
@@ -222,13 +240,11 @@ public class RunMonitorActivity extends AppCompatActivity {
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    } catch (RuntimeException e) {
-                        e.printStackTrace();
+                        break;
                     }
                 }
             }
         });
-        soundThread.start();
     }
 
     private void initializeRecorder() {
@@ -246,20 +262,37 @@ public class RunMonitorActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        super.onPause();
         if (helper != null) {
             helper.shutdownServices();
         }
         soundThread.interrupt();
-        soundThread = null;
         countDownTimer.cancel();
         if (recorder != null) {
             try {
                 recorder.stop();
+                recorder.reset();
                 recorder.release();
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
         }
-        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (allowRemote) {
+            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
+            helper.registerService(context);
+        }
+        if (soundThread.getState() != Thread.State.NEW) {
+            Intent intent = new Intent(context, RunMonitorActivity.class);
+            intent.putExtra(RunMonitorActivity.RUN_MONITOR_KEY, monitor);
+            startActivity(intent);
+            finish();
+        } else {
+            soundThread.start();
+        }
     }
 }

@@ -26,7 +26,7 @@ public class MonitorListAdapter extends RecyclerView.Adapter<MonitorListAdapter.
             lastPosition = -1;
             monitorViewDuration = itemView.findViewById(R.id.element_duration);
             progressBar = itemView.findViewById(R.id.progress_element_threshold);
-                    parentView = itemView.findViewById(R.id.monitor_element_parent_layout);
+            parentView = itemView.findViewById(R.id.monitor_element_parent_layout);
         }
     }
 

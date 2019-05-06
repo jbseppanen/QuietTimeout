@@ -1,5 +1,6 @@
 package com.jbseppanen.quiettimeout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ public class EditMonitorActivity extends AppCompatActivity {
     private Thread soundThread;
     private ProgressBar mProgressBar;
     SeekBar seekBar;
+    private Context context;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -32,7 +34,7 @@ public class EditMonitorActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.edit_navigation_run:
                     updateMonitor();
-                    Intent intent = new Intent(MainActivity.context, RunMonitorActivity.class);
+                    Intent intent = new Intent(context, RunMonitorActivity.class);
                     intent.putExtra(RunMonitorActivity.RUN_MONITOR_KEY, monitor);
                     startActivity(intent);
                     finish();
@@ -56,6 +58,8 @@ public class EditMonitorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_monitor);
+
+        context = this;
 
         ((BottomNavigationView) findViewById(R.id.navigation)).setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
