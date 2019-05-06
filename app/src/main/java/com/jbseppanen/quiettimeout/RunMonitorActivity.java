@@ -181,11 +181,6 @@ public class RunMonitorActivity extends AppCompatActivity {
             }
         };
 
-//        if (allowRemote) {
-//            helper = new ConnectionHelper(RemoteMonitorActivity.SOUND_LEVEL_SERVICE_NAME);
-//            helper.registerService(context);
-//        }
-
         soundThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -247,10 +242,6 @@ public class RunMonitorActivity extends AppCompatActivity {
                         e.printStackTrace();
                         break;
                     }
-//                    catch (RuntimeException e) {
-//                        e.printStackTrace();
-//                        break;
-//                    }
                 }
             }
         });
@@ -282,7 +273,6 @@ public class RunMonitorActivity extends AppCompatActivity {
                 recorder.stop();
                 recorder.reset();
                 recorder.release();
-//                recorder = null;
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
@@ -303,12 +293,6 @@ public class RunMonitorActivity extends AppCompatActivity {
             finish();
         } else {
             soundThread.start();
-//            if (soundThread.getState() == Thread.State.NEW) {
-//                soundThread.start();
-//            } else {
-//                countDownTimer.start();
-//                soundThread.run();
-//            }
         }
     }
 }
