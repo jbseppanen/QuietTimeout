@@ -4,7 +4,7 @@
     <item
         android:id="@+id/edit_navigation_run"
         android:icon="@android:drawable/ic_media_play"
-        android:title="Run" />
+        android:title="Start" />
 
     <item
         android:id="@+id/edit_navigation_save"
